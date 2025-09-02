@@ -1,0 +1,1 @@
+export const DB_NAME = "CHAI_CODE_YOUTUBE"
