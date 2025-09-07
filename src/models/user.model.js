@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
       index: true,
       minlength: [3, "Full name must be at least 3 characters long"],
       maxlength: [15, "Full name must not exceed 15 characters"],
-      match: [/^[a-zA-Z\s]+$/, "Full name can only contain letters and spaces"],
+      match: [/^[a-zA-Z0-9]([._-]?[a-zA-Z0-9]+)*$/, "Username: letters, numbers, _, -, .; 3–30 chars; no consecutive special chars."],
     },
     email: {
       type: String,

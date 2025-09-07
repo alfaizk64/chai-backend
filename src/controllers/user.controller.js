@@ -65,8 +65,8 @@ export const registerUser = asyncHandler(async (req, res) => {
   if (usernameExists) {
     throw new ApiError(409, "Username is already taken");
   }
+  
   const avatarLocalPath = req?.files?.avatar?.[0]?.path;
-  console.log(avatarLocalPath);
 
   
   if (!avatarLocalPath) {
@@ -78,12 +78,11 @@ export const registerUser = asyncHandler(async (req, res) => {
 //     throw new ApiError(400, "cover file is required");
 //   }
   const avatar = await uploadOnCloudinary(avatarLocalPath);
-  console.log(avatar);
   
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
   if (!avatar) {
-    throw new ApiError(400, "Avatar file is required Not Uploaded to Cloud!!");
-  }
+      throw new ApiError(400, "Avatar file is required Not Uploaded to Cloud!!");
+    }
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
   const user = await User.create({
     fullName,
