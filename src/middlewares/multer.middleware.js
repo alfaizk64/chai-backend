@@ -4,7 +4,7 @@ import path from "path"
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "/Public/temp")
+    cb(null, "./Public/temp")
   },
   filename: function (req, file, cb) {
      const uniqueName = `${uuidv4()}${path.extname(file.originalname)}`;
