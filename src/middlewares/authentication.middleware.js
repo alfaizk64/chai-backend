@@ -12,7 +12,7 @@ export const isAuthenticated = asyncHandler(async (req, _ , next) => {
     }
 
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    console.log(decoded);
+    // console.log(decoded);
 
     req.user = {id:decoded._id};
     next();

@@ -205,12 +205,12 @@ export const logout = asyncHandler(async (req, res) => {
     .clearCookie("accessToken", {
       httpOnly: true,
       secure: true,
-      sameSite: "stric",
+      sameSite: "strict",
     })
     .clearCookie("refreshToken", {
       httpOnly: true,
       secure: true,
-      sameSite: "stric",
+      sameSite: "strict",
     })
     .json(new ApiResponse(200, {},"user logout Successfully"));
 });
