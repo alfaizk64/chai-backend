@@ -24,7 +24,7 @@ export const uploadOnCloudinary = async (localFilePath) => {
    fs.unlinkSync(localFilePath)
     return uploadResponse;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     
     fs.unlinkSync(localFilePath)
     // removed local savewtemp file 
