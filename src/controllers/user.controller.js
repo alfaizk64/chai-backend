@@ -164,18 +164,18 @@ export const loginUser = asyncHandler(async (req, res) => {
   };
   const sanitized = sanitizeUser(userExistance);
 
-  res
+  return res
     .status(200)
     .cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite:true,
+      sameSite: "strict",
       maxAge: 6 * 60 * 60 * 1000,
     })
     .cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite:true,
+      sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
     .json(
@@ -188,4 +188,29 @@ export const loginUser = asyncHandler(async (req, res) => {
       )
     );
 });
-export const logout = asyncHandler(async (req, res) => {});
+export const logout = asyncHandler(async (req, res) => {
+  await User.findByIdAndUpdate(
+    req.user?.id,
+    {
+      $set: {
+        refreshToken: "",
+      },
+    },
+    {
+      new: true,
+    }
+  );
+  return res
+    .status(200)
+    .clearCookie("accessToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "stric",
+    })
+    .clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "stric",
+    })
+    .json(new ApiResponse(200, {},"user logout Successfully"));
+});
