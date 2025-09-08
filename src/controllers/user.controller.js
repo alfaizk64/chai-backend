@@ -13,7 +13,7 @@ const generateAccessAndRefreshToken = async (userId) => {
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
     user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });  //validate before save is used just for not invoking password hashing which is used using pre middleware 
 
     return { accessToken, refreshToken };
   } catch (error) {
