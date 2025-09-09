@@ -1,5 +1,5 @@
 import express from "express";
-import { loginUser, logout, registerUser } from "../controllers/user.controller.js";
+import { loginUser, logout, refreshAccessToken, registerUser } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { isAuthenticated } from "../middlewares/authentication.middleware.js";
 
@@ -21,11 +21,9 @@ router.post(
 );
 
 router.post('/login',loginUser)
-
+router.post("/refresh-access-token",refreshAccessToken)
 
 // scured routes
-
-
 
 router.post('/logout',isAuthenticated,logout)
 export default router;

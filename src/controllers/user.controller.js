@@ -4,7 +4,7 @@ import validator from "validator";
 import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { validate } from "uuid";
+import jwt from "jsonwebtoken";
 
 // generate access and refresh tokens
 const generateAccessAndRefreshToken = async (userId) => {
@@ -13,7 +13,7 @@ const generateAccessAndRefreshToken = async (userId) => {
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
     user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });  //validate before save is used just for not invoking password hashing which is used using pre middleware 
+    await user.save({ validateBeforeSave: false }); //validate before save is used just for not invoking password hashing which is used using pre middleware
 
     return { accessToken, refreshToken };
   } catch (error) {
@@ -183,11 +183,14 @@ export const loginUser = asyncHandler(async (req, res) => {
         200,
         {
           user: sanitized,
+          refreshToken,
+          accessToken
         },
         "User logged In Successfully"
       )
     );
 });
+
 export const logout = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user?.id,
@@ -212,5 +215,54 @@ export const logout = asyncHandler(async (req, res) => {
       secure: true,
       sameSite: "strict",
     })
-    .json(new ApiResponse(200, {},"user logout Successfully"));
+    .json(new ApiResponse(200, {}, "user logout Successfully"));
+});
+
+// refreshToken controller
+
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+  const userRefresToken = req.cookies.refreshToken || req.body.refreshToken;
+
+  if (!userRefresToken) {
+    throw new ApiError(401, "unathorized request");
+  }
+  const decodedRefreshtoken = jwt.verify(
+    userRefresToken,
+    process.env.REFRESH_TOKEN_SECRET
+  );
+
+  const user = await User.findById(decodedRefreshtoken?._id);
+
+  if (!user) {
+    throw new ApiError(401, "Invalid Refresh Token");
+  }
+  if (userRefresToken !== user?.refreshToken) {
+    throw new ApiError(401, "Refresh token is expired or used");
+  }
+      const {refreshToken,accessToken} =await generateAccessAndRefreshToken(user._id)
+              
+
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 6 * 60 * 60 * 1000,
+    })
+    .cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+    .json(
+      new ApiResponse(
+        200,
+        {
+          refreshToken,accessToken
+        },
+        "New Access Token Generated Successfully"
+      )
+    );
 });
