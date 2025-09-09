@@ -1,5 +1,5 @@
 import express from "express";
-import { loginUser, logout, refreshAccessToken, registerUser } from "../controllers/user.controller.js";
+import { changeCurentPassword, getCurrentUser, loginUser, logout, refreshAccessToken, registerUser, updateAccountDetails, updateuserAvatar, updateuserCoverImage } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { isAuthenticated } from "../middlewares/authentication.middleware.js";
 
@@ -24,6 +24,10 @@ router.post('/login',loginUser)
 router.post("/refresh-access-token",refreshAccessToken)
 
 // scured routes
-
+router.get('/getMe',isAuthenticated,getCurrentUser)
+router.patch('/updateDetail',isAuthenticated,updateAccountDetails)
+router.patch('/updateAvatar',upload.single("avatar"),isAuthenticated,updateuserAvatar)
+router.patch('/updateCoverImage',upload.single("coverImage"),isAuthenticated,updateuserCoverImage)
+router.post("/changePassword",isAuthenticated,changeCurentPassword)
 router.post('/logout',isAuthenticated,logout)
 export default router;

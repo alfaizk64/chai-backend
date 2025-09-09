@@ -30,3 +30,12 @@ export const uploadOnCloudinary = async (localFilePath) => {
     // removed local savewtemp file 
   }
 };
+
+
+export const deleteMediaFromCloudinary = async (publicId,) => {
+    try {
+        await cloudinary.uploader.destroy(publicId);
+    } catch (error) {
+        console.log(error);
+    }
+}
